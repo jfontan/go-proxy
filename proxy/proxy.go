@@ -14,10 +14,10 @@ type Proxy struct {
 	URL   string
 }
 
-func NewProxy(url string) *Proxy {
+func NewProxy(url string, cache_size int) *Proxy {
 	proxy := new(Proxy)
 	proxy.Cache = NewCache()
-	proxy.Cache.MaxSize = 1024 * 1024 * 16 // 16 Mb
+	proxy.Cache.MaxSize = 1024 * 1024 * cache_size
 	proxy.URL = url
 
 	return proxy
