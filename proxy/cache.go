@@ -4,15 +4,18 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"sort"
 	"sync"
 	"time"
 )
+
+type dataType map[string]*Data
 
 type Cache struct {
 	m       sync.Mutex
 	MaxSize int
 	Size    int
-	Data    map[string]Data
+	Data    dataType
 }
 
 type Data struct {
@@ -26,7 +29,7 @@ type Data struct {
 
 func NewCache() *Cache {
 	cache := new(Cache)
-	cache.Data = make(map[string]Data)
+	cache.Data = make(dataType)
 	cache.MaxSize = 1024 * 1024 // 1 Mb
 
 	return cache
@@ -55,7 +58,7 @@ func (c *Cache) Add(name string, duration time.Duration, bytes []byte, header ht
 	}
 
 	c.m.Lock()
-	c.Data[name] = data
+	c.Data[name] = &data
 	c.Size += data.Size
 	c.m.Unlock()
 
@@ -78,6 +81,9 @@ func (c *Cache) Get(name string) ([]byte, http.Header) {
 	}
 
 	data.LastAccess = time.Now()
+
+	log.Print(data[name]
+	// c.Data[name] = data
 	return data.Body, data.Header
 }
 
@@ -112,6 +118,12 @@ func (c *Cache) clean(size int) {
 	if c.Size+size < c.MaxSize {
 		return
 	}
+
+	log.Print(times)
+
+	sort.Sort(times)
+
+	log.Print(times)
 
 	for _, t := range times {
 		c.remove(t.Name)
